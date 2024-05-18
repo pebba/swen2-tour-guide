@@ -1,6 +1,7 @@
 package technikum.bohrffer.swen2tourguide.models;
 
 public class Tour {
+
     private String name;
     private String description;
     private String from;

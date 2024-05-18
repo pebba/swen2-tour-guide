@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="technikum.bohrffer.swen2tourguide.controllers.TourAddController"
+            prefHeight="400.0" prefWidth="600.0">
+    <VBox>
+        <TextField fx:id="name" promptText="Tournamen eingeben"/>
+        <TextField fx:id="description" promptText="Tourbeschreibung"/>
+        <TextField fx:id="from" promptText="Von"/>
+        <TextField fx:id="to" promptText="Nach"/>
+        <TextField fx:id="transport" promptText="Transportart"/>
+        <TextField fx:id="distance" promptText="Distanz"/>
+        <TextField fx:id="time" promptText="Dauer"/>
+        <Button fx:id="submitButton" text="Submit" onAction="#handleSubmitButton"/>
+
+    </VBox>
+
+</AnchorPane>

@@ -1,15 +1,28 @@
 package technikum.bohrffer.swen2tourguide.controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
+import technikum.bohrffer.swen2tourguide.TourApp;
 import technikum.bohrffer.swen2tourguide.models.Tour;
 import technikum.bohrffer.swen2tourguide.services.TourService;
 
-public class TourPlannerController {
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class TourPlannerController implements Initializable {
+    TourApp tourApp = new TourApp();
+
 
     @FXML
     private ListView<Tour> tourList;
@@ -22,6 +35,8 @@ public class TourPlannerController {
 
     @FXML
     private TextField searchField;
+    //@FXML
+    //private TourAddController addController = new TourAddController();
 
     @FXML
     private void initialize() {
@@ -60,8 +75,36 @@ public class TourPlannerController {
     }
 
     @FXML
-    private void handleAddTour() {
-        // logik fehlt
+    private void handleAddTour(ActionEvent actionEvent ) { //Tour tour
+        System.out.println("Add Tour");
+        TourAddController tourAddController = null;
+
+        try {
+            // Lade die neue FXML-Datei mit dem zugehörigen Controller
+            FXMLLoader loader = new FXMLLoader(TourApp.class.getResource("tour-add.fxml"));
+            Parent root = loader.load();
+            tourAddController = loader.getController();
+
+            // Erstelle eine neue Szene mit dem neuen Formular
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setTitle("Tour anlegen");
+            stage.setScene(scene);
+            stage.show();
+            tourAddController.setStage(stage);
+            
+
+            //addController.initialize();
+            // logik fehlt
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        Tour tour = tourAddController.getTour();
+        System.out.println("New Tour");
+        System.out.println(tour.getDistance());
+        tourList.getItems().add(tour);
+        System.out.println(tourList.getItems());
     }
 
     @FXML
@@ -81,5 +124,10 @@ public class TourPlannerController {
     private void handleSearch() {
         String query = searchField.getText();
         // logik fehlt
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+
     }
 }
