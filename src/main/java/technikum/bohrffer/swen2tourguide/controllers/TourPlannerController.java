@@ -82,6 +82,10 @@ public class TourPlannerController implements Initializable {
         try {
             // Lade die neue FXML-Datei mit dem zugehörigen Controller
             FXMLLoader loader = new FXMLLoader(TourApp.class.getResource("tour-add.fxml"));
+            loader.setControllerFactory(controllerClass -> {
+                // Übergebe die erforderlichen Argumente an den Konstruktor des Controllers
+                return new TourAddController(tourList);
+            });
             Parent root = loader.load();
             tourAddController = loader.getController();
 
@@ -100,11 +104,14 @@ public class TourPlannerController implements Initializable {
         catch (IOException e){
             e.printStackTrace();
         }
+        /*
         Tour tour = tourAddController.getTour();
         System.out.println("New Tour");
         System.out.println(tour.getDistance());
         tourList.getItems().add(tour);
         System.out.println(tourList.getItems());
+        */
+
     }
 
     @FXML

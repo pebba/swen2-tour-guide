@@ -3,9 +3,11 @@ package technikum.bohrffer.swen2tourguide.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import technikum.bohrffer.swen2tourguide.models.Tour;
+import technikum.bohrffer.swen2tourguide.models.TourList;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -29,6 +31,12 @@ public class TourAddController implements Initializable {
     private Button submitButton;
     private Stage stage;
     private Tour tour;
+
+    private ListView<Tour> tourList;
+
+    public TourAddController(ListView<Tour> tourList){
+        this.tourList = tourList;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -68,6 +76,7 @@ public class TourAddController implements Initializable {
         tour = new Tour(name.getText(), description.getText(), from.getText(), to.getText(), transport.getText(),
                 dist, timeDouble, image);
         System.out.println(tour.getDistance());
+        tourList.getItems().add(tour);
         stage.close();
 
     }
