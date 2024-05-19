@@ -1,5 +1,8 @@
 package technikum.bohrffer.swen2tourguide.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tour {
 
     private String name;
@@ -10,6 +13,7 @@ public class Tour {
     private double distance;
     private double estimatedTime;
     private String routeImage;
+    private final List<TourLog> tourLogs;
 
     public Tour(String name, String description, String from, String to, String transportType, double distance, double estimatedTime, String routeImage) {
         this.name = name;
@@ -20,17 +24,15 @@ public class Tour {
         this.distance = distance;
         this.estimatedTime = estimatedTime;
         this.routeImage = routeImage;
+        this.tourLogs = new ArrayList<>();
     }
 
-    public void updateTour(String name, String description, String from, String to, String transportType, double distance, double estimatedTime, String routeImage){
-        this.name = name;
-        this.description = description;
-        this.from = from;
-        this.to = to;
-        this.transportType = transportType;
-        this.distance = distance;
-        this.estimatedTime = estimatedTime;
-        this.routeImage = routeImage;
+    public List<TourLog> getTourLogs() {
+        return tourLogs;
+    }
+
+    public void addTourLog(TourLog log) {
+        this.tourLogs.add(log);
     }
 
     public String getName() {
