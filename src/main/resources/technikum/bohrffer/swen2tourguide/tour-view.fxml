@@ -25,8 +25,8 @@
                                 <ButtonBar>
                                     <buttons>
                                         <Button text="+" onAction="#handleAddTour"/>
-                                        <Button text="-"/>
-                                        <Button text="..." onAction="#modifyTour"/>
+                                        <Button text="-" onAction="#handleRemoveTour"/>
+                                        <Button text="..." onAction="#handleModifyTour"/>
                                     </buttons>
                                 </ButtonBar>
                                 <ListView fx:id="tourList"/>

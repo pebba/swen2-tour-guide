@@ -115,23 +115,24 @@ public class TourPlannerController implements Initializable {
         */
 
     }
-
-    public void modifyTour(){
+    @FXML
+    public void handleModifyTour(){
         //Tour selectedObject;
-        tourList.setOnMouseClicked(event -> {
-            Tour selectedItem = tourList.getSelectionModel().getSelectedItem();
-            if (selectedItem != null) {
+        Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
+        //tourList.setOnMouseClicked(event -> {
+        //    Tour selectedItem = tourList.getSelectionModel().getSelectedItem();
+            if (selectedTour != null) {
                 elementSelected = true;
-                Tour selectedObject = selectedItem;
+                Tour selectedObject = selectedTour;
                 System.out.println("Der Benutzer hat auf das Element geklickt: " + selectedObject.getName());
 
                 TourModifyController tourModifyController = new TourModifyController(tourList);
-                tourModifyController.handle();
-                tourModifyController.openWindow(selectedItem);
+                //tourModifyController.handle();
+                tourModifyController.openWindow(selectedTour);
 
                 //openWindow(selectedObject);
             }
-        });
+        //});
         /*
         tourList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
