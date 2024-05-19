@@ -102,12 +102,12 @@ public class TourAddController implements Initializable {
             isValid = false;
         }
         String input = distance.getText();
-        if(!input.matches("\\d*(\\.\\d+)?$")){
+        if(!input.matches("\\d+(\\.\\d+)?$")){
             System.out.println("Distanz muss eine Zahl sein!");
             isValid = false;
         }
         input = time.getText();
-        if(!input.matches("(\\d*(\\.\\d+)?$)")){
+        if(!input.matches("(\\d+(\\.\\d+)?$)")){
             System.out.println("Zeit muss eine Zahl sein!");
             isValid = false;
         }

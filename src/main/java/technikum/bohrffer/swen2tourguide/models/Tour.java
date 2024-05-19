@@ -22,6 +22,17 @@ public class Tour {
         this.routeImage = routeImage;
     }
 
+    public void updateTour(String name, String description, String from, String to, String transportType, double distance, double estimatedTime, String routeImage){
+        this.name = name;
+        this.description = description;
+        this.from = from;
+        this.to = to;
+        this.transportType = transportType;
+        this.distance = distance;
+        this.estimatedTime = estimatedTime;
+        this.routeImage = routeImage;
+    }
+
     public String getName() {
         return name;
     }

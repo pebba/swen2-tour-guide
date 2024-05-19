@@ -11,6 +11,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import technikum.bohrffer.swen2tourguide.TourApp;
 import technikum.bohrffer.swen2tourguide.models.Tour;
@@ -35,6 +36,7 @@ public class TourPlannerController implements Initializable {
 
     @FXML
     private TextField searchField;
+    private Boolean elementSelected = false;
     //@FXML
     //private TourAddController addController = new TourAddController();
 
@@ -111,6 +113,64 @@ public class TourPlannerController implements Initializable {
         tourList.getItems().add(tour);
         System.out.println(tourList.getItems());
         */
+
+    }
+
+    public void modifyTour(){
+        //Tour selectedObject;
+        tourList.setOnMouseClicked(event -> {
+            Tour selectedItem = tourList.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                elementSelected = true;
+                Tour selectedObject = selectedItem;
+                System.out.println("Der Benutzer hat auf das Element geklickt: " + selectedObject.getName());
+
+                TourModifyController tourModifyController = new TourModifyController(tourList);
+                tourModifyController.handle();
+                tourModifyController.openWindow(selectedItem);
+
+                //openWindow(selectedObject);
+            }
+        });
+        /*
+        tourList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                System.out.println("Der Benutzer hat auf das Element geklickt: " + newValue);
+
+                openWindow(newValue);
+                /*
+                TextField selectedElementTextField = new TextField();
+                selectedElementTextField.setEditable(true);
+
+                VBox root = new VBox();
+                root.getChildren().add(newValue);
+                /
+            }
+        });
+            */
+
+    }
+
+    public void openWindow(Tour tour){
+        TextField nameField = new TextField();
+        TextField distanceField = new TextField();
+
+        nameField.setEditable(true);
+        distanceField.setEditable(true);
+
+        nameField.setText(tour.getName());
+        distanceField.setText(String.valueOf(tour.getDistance()));
+
+        Stage detailsStage = new Stage();
+        VBox detailsRoot = new VBox();
+        detailsRoot.getChildren().addAll(nameField, distanceField);
+
+        //detailsRoot.getChildren().add(new Button("Schließen"));
+        Scene detailsScene = new Scene(detailsRoot, 200, 100);
+        detailsStage.setScene(detailsScene);
+        detailsStage.setTitle(tour.getName() + " Details");
+        detailsStage.show();
+        System.out.println(tour.getName());
 
     }
 
