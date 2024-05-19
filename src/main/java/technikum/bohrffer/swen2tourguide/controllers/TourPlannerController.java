@@ -1,5 +1,8 @@
 package technikum.bohrffer.swen2tourguide.controllers;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -54,15 +57,29 @@ public class TourPlannerController implements Initializable {
     @FXML
     private TextField searchField;
 
+    @FXML
+    private TableView<Detail> detailsTableView;
+
+    @FXML
+    private TableColumn<Detail, String> detailKeyColumn;
+
+    @FXML
+    private TableColumn<Detail, String> detailValueColumn;
+
+    private final ObservableList<Detail> detailsData = FXCollections.observableArrayList();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         durationColumn.setCellValueFactory(new PropertyValueFactory<>("totalTime"));
         distanceColumn.setCellValueFactory(new PropertyValueFactory<>("totalDistance"));
         commentColumn.setCellValueFactory(new PropertyValueFactory<>("comment"));
         difficultyColumn.setCellValueFactory(new PropertyValueFactory<>("difficulty"));
         ratingColumn.setCellValueFactory(new PropertyValueFactory<>("rating"));
+
+        detailKeyColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
+        detailValueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
+        detailsTableView.setItems(detailsData);
 
         // sample data
         tourList.getItems().addAll(
@@ -81,14 +98,21 @@ public class TourPlannerController implements Initializable {
             }
         });
 
-        // zeige details von erster tour
         if (!tourList.getItems().isEmpty()) {
             tourList.getSelectionModel().select(0);
         }
     }
 
     private void loadTourDetails(Tour tour) {
-        // zeige route image
+        detailsData.clear();
+        detailsData.add(new Detail("Name", tour.getName()));
+        detailsData.add(new Detail("Description", tour.getDescription()));
+        detailsData.add(new Detail("From", tour.getFrom()));
+        detailsData.add(new Detail("To", tour.getTo()));
+        detailsData.add(new Detail("Transport", tour.getTransportType()));
+        detailsData.add(new Detail("Distance", String.valueOf(tour.getDistance())));
+        detailsData.add(new Detail("Time", String.valueOf(tour.getEstimatedTime())));
+
         if (tour.getRouteImage() != null) {
             try {
                 mapView.setImage(new Image(tour.getRouteImage()));
@@ -161,13 +185,21 @@ public class TourPlannerController implements Initializable {
     }
 
     private void clearTourDetailsAndLogs() {
+        detailsData.clear();
         mapView.setImage(null);
         tourLogsTable.getItems().clear();
     }
 
     @FXML
     private void handleSearch() {
-        String query = searchField.getText();
+        String query = searchField.getText().toLowerCase();
+        ObservableList<Tour> filteredTours = FXCollections.observableArrayList();
+        for (Tour tour : tourList.getItems()) {
+            if (tour.getName().toLowerCase().contains(query)) {
+                filteredTours.add(tour);
+            }
+        }
+        tourList.setItems(filteredTours);
     }
 
     @FXML
@@ -233,6 +265,32 @@ public class TourPlannerController implements Initializable {
             tourLogModifyController.setStage(stage);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static class Detail {
+        private final SimpleStringProperty key;
+        private final SimpleStringProperty value;
+
+        public Detail(String key, String value) {
+            this.key = new SimpleStringProperty(key);
+            this.value = new SimpleStringProperty(value);
+        }
+
+        public String getKey() {
+            return key.get();
+        }
+
+        public void setKey(String key) {
+            this.key.set(key);
+        }
+
+        public String getValue() {
+            return value.get();
+        }
+
+        public void setValue(String value) {
+            this.value.set(value);
         }
     }
 }
