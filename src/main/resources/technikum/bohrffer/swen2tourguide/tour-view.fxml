@@ -19,28 +19,28 @@
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="technikum.bohrffer.swen2tourguide.controllers.TourPlannerController">
     <top>
         <MenuBar>
-            <Menu text="File" />
-            <Menu text="Edit" />
-            <Menu text="Options" />
-            <Menu text="Help" />
+            <Menu text="File"/>
+            <Menu text="Edit"/>
+            <Menu text="Options"/>
+            <Menu text="Help"/>
         </MenuBar>
     </top>
     <center>
         <VBox>
             <SplitPane dividerPositions="0.5">
                 <VBox>
-                    <TextField fx:id="searchField" promptText="Search" />
+                    <TextField fx:id="searchField" promptText="Search"/>
                     <TabPane>
                         <Tab text="Tours">
                             <VBox>
                                 <ButtonBar>
                                     <buttons>
-                                        <Button onAction="#handleAddTour" text="+" />
-                                        <Button onAction="#handleRemoveTour" text="-" />
-                                        <Button onAction="#handleModifyTour" text="..." />
+                                        <Button onAction="#handleAddTour" text="+"/>
+                                        <Button onAction="#handleRemoveTour" text="-"/>
+                                        <Button onAction="#handleModifyTour" text="..."/>
                                     </buttons>
                                 </ButtonBar>
-                                <ListView fx:id="tourList" />
+                                <ListView fx:id="tourList"/>
                             </VBox>
                         </Tab>
                     </TabPane>
@@ -48,33 +48,39 @@
                 <VBox>
                     <TabPane>
                         <Tab text="General">
-                            <VBox />
+                            <VBox/>
                         </Tab>
                         <Tab text="Route">
                             <VBox>
-                                <ImageView fx:id="mapView" />
+                                <ImageView fx:id="mapView"/>
                             </VBox>
                         </Tab>
                         <Tab text="Misc">
-                            <VBox />
+                            <VBox/>
                         </Tab>
                     </TabPane>
-                    <ButtonBar />
+                    <ButtonBar/>
                 </VBox>
             </SplitPane>
             <VBox>
-                <Label text="Tour Logs" />
+                <Label text="Tour Logs"/>
                 <TableView fx:id="tourLogsTable">
                     <columns>
-                        <TableColumn fx:id="dateColumn" text="Date" />
-                        <TableColumn fx:id="durationColumn" text="Duration" />
-                        <TableColumn fx:id="distanceColumn" text="Distance" />
-                        <TableColumn fx:id="commentColumn" text="Comment" />
-                        <TableColumn fx:id="difficultyColumn" text="Difficulty" />
-                        <TableColumn fx:id="ratingColumn" text="Rating" />
+                        <TableColumn fx:id="dateColumn" text="Date"/>
+                        <TableColumn fx:id="durationColumn" text="Duration"/>
+                        <TableColumn fx:id="distanceColumn" text="Distance"/>
+                        <TableColumn fx:id="commentColumn" text="Comment"/>
+                        <TableColumn fx:id="difficultyColumn" text="Difficulty"/>
+                        <TableColumn fx:id="ratingColumn" text="Rating"/>
                     </columns>
                 </TableView>
-                <ButtonBar />
+                <ButtonBar>
+                    <buttons>
+                        <Button onAction="#handleAddTourLog" text="+"/>
+                        <Button onAction="#handleRemoveTourLog" text="-"/>
+                        <Button onAction="#handleModifyTourLog" text="..."/>
+                    </buttons>
+                </ButtonBar>
             </VBox>
         </VBox>
     </center>

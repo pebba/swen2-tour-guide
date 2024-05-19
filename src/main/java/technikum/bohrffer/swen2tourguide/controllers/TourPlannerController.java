@@ -1,6 +1,5 @@
 package technikum.bohrffer.swen2tourguide.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,7 +16,6 @@ import javafx.stage.Stage;
 import technikum.bohrffer.swen2tourguide.TourApp;
 import technikum.bohrffer.swen2tourguide.models.Tour;
 import technikum.bohrffer.swen2tourguide.models.TourLog;
-import technikum.bohrffer.swen2tourguide.services.TourService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
 public class TourPlannerController implements Initializable {
+
     @FXML
     private ListView<Tour> tourList;
 
@@ -57,7 +56,6 @@ public class TourPlannerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        TourService tourService = new TourService();
 
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         durationColumn.setCellValueFactory(new PropertyValueFactory<>("totalTime"));
@@ -109,7 +107,7 @@ public class TourPlannerController implements Initializable {
     }
 
     @FXML
-    private void handleAddTour(ActionEvent actionEvent) {
+    private void handleAddTour() {
         System.out.println("Add Tour");
 
         try {
@@ -134,8 +132,22 @@ public class TourPlannerController implements Initializable {
     public void handleModifyTour() {
         Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
         if (selectedTour != null) {
-            TourModifyController tourModifyController = new TourModifyController(tourList);
-            tourModifyController.openWindow(selectedTour);
+            try {
+                FXMLLoader loader = new FXMLLoader(TourApp.class.getResource("tour-modify.fxml"));
+                loader.setControllerFactory(controllerClass -> new TourModifyController(selectedTour, tourList));
+                Parent root = loader.load();
+                TourModifyController tourModifyController = loader.getController();
+
+                Scene scene = new Scene(root);
+                Stage stage = new Stage();
+                stage.setTitle("Modify Tour");
+                stage.setScene(scene);
+                stage.show();
+
+                tourModifyController.setStage(stage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -156,5 +168,71 @@ public class TourPlannerController implements Initializable {
     @FXML
     private void handleSearch() {
         String query = searchField.getText();
+    }
+
+    @FXML
+    private void handleAddTourLog() {
+        System.out.println("Add Tour Log");
+
+        Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
+        if (selectedTour == null) {
+            System.out.println("No tour selected.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(TourApp.class.getResource("tour-log-add.fxml"));
+            loader.setControllerFactory(controllerClass -> new TourLogAddController(selectedTour, tourLogsTable));
+            Parent root = loader.load();
+            TourLogAddController tourLogAddController = loader.getController();
+
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setTitle("Add Tour Log");
+            stage.setScene(scene);
+            stage.show();
+
+            tourLogAddController.setStage(stage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleRemoveTourLog() {
+        TourLog selectedLog = tourLogsTable.getSelectionModel().getSelectedItem();
+        if (selectedLog != null) {
+            Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
+            if (selectedTour != null) {
+                selectedTour.getTourLogs().remove(selectedLog);
+                tourLogsTable.getItems().remove(selectedLog);
+            }
+        }
+    }
+
+    @FXML
+    private void handleModifyTourLog() {
+        TourLog selectedLog = tourLogsTable.getSelectionModel().getSelectedItem();
+        if (selectedLog == null) {
+            System.out.println("No tour log selected.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(TourApp.class.getResource("tour-log-modify.fxml"));
+            loader.setControllerFactory(controllerClass -> new TourLogModifyController(selectedLog, tourLogsTable));
+            Parent root = loader.load();
+            TourLogModifyController tourLogModifyController = loader.getController();
+
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setTitle("Modify Tour Log");
+            stage.setScene(scene);
+            stage.show();
+
+            tourLogModifyController.setStage(stage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
