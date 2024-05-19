@@ -7,24 +7,24 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import technikum.bohrffer.swen2tourguide.TourApp;
 import technikum.bohrffer.swen2tourguide.models.Tour;
+import technikum.bohrffer.swen2tourguide.models.TourLog;
 import technikum.bohrffer.swen2tourguide.services.TourService;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
 public class TourPlannerController implements Initializable {
-    TourApp tourApp = new TourApp();
-
-
     @FXML
     private ListView<Tour> tourList;
 
@@ -32,27 +32,54 @@ public class TourPlannerController implements Initializable {
     private ImageView mapView;
 
     @FXML
-    private TableView<?> tourLogsTable;
+    private TableView<TourLog> tourLogsTable;
+
+    @FXML
+    private TableColumn<TourLog, LocalDateTime> dateColumn;
+
+    @FXML
+    private TableColumn<TourLog, Double> durationColumn;
+
+    @FXML
+    private TableColumn<TourLog, Double> distanceColumn;
+
+    @FXML
+    private TableColumn<TourLog, String> commentColumn;
+
+    @FXML
+    private TableColumn<TourLog, String> difficultyColumn;
+
+    @FXML
+    private TableColumn<TourLog, Integer> ratingColumn;
 
     @FXML
     private TextField searchField;
-    private Boolean elementSelected = false;
-    //@FXML
-    //private TourAddController addController = new TourAddController();
 
-    @FXML
-    private void initialize() {
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         TourService tourService = new TourService();
 
-        // sample data (geht noch nicht)
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        durationColumn.setCellValueFactory(new PropertyValueFactory<>("totalTime"));
+        distanceColumn.setCellValueFactory(new PropertyValueFactory<>("totalDistance"));
+        commentColumn.setCellValueFactory(new PropertyValueFactory<>("comment"));
+        difficultyColumn.setCellValueFactory(new PropertyValueFactory<>("difficulty"));
+        ratingColumn.setCellValueFactory(new PropertyValueFactory<>("rating"));
+
+        // sample data
         tourList.getItems().addAll(
                 new Tour("Wienerwald", "Beautiful forest tour", "Vienna", "Wienerwald", "Hiking", 12.0, 3.0, "https://via.placeholder.com/150"),
                 new Tour("Dopplerhütte", "Challenging mountain bike route", "Vienna", "Dopplerhütte", "Biking", 15.0, 2.5, "https://via.placeholder.com/150")
         );
 
+        // sample logs
+        tourList.getItems().get(0).addTourLog(new TourLog(LocalDateTime.now(), "Nice tour", "Easy", 12.0, 3.0, 5));
+        tourList.getItems().get(1).addTourLog(new TourLog(LocalDateTime.now(), "Great ride", "Hard", 15.0, 2.5, 4));
+
         tourList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 loadTourDetails(newValue);
+                loadTourLogs(newValue);
             }
         });
 
@@ -76,103 +103,40 @@ public class TourPlannerController implements Initializable {
         }
     }
 
+    private void loadTourLogs(Tour tour) {
+        tourLogsTable.getItems().clear();
+        tourLogsTable.getItems().addAll(tour.getTourLogs());
+    }
+
     @FXML
-    private void handleAddTour(ActionEvent actionEvent ) { //Tour tour
+    private void handleAddTour(ActionEvent actionEvent) {
         System.out.println("Add Tour");
-        TourAddController tourAddController = null;
 
         try {
-            // Lade die neue FXML-Datei mit dem zugehörigen Controller
             FXMLLoader loader = new FXMLLoader(TourApp.class.getResource("tour-add.fxml"));
-            loader.setControllerFactory(controllerClass -> {
-                // Übergebe die erforderlichen Argumente an den Konstruktor des Controllers
-                return new TourAddController(tourList);
-            });
+            loader.setControllerFactory(controllerClass -> new TourAddController(tourList));
             Parent root = loader.load();
-            tourAddController = loader.getController();
+            TourAddController tourAddController = loader.getController();
 
-            // Erstelle eine neue Szene mit dem neuen Formular
             Scene scene = new Scene(root);
             Stage stage = new Stage();
-            stage.setTitle("Tour anlegen");
+            stage.setTitle("Add Tour");
             stage.setScene(scene);
             stage.show();
-            tourAddController.setStage(stage);
-            
 
-            //addController.initialize();
-            // logik fehlt
-        }
-        catch (IOException e){
+            tourAddController.setStage(stage);
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        /*
-        Tour tour = tourAddController.getTour();
-        System.out.println("New Tour");
-        System.out.println(tour.getDistance());
-        tourList.getItems().add(tour);
-        System.out.println(tourList.getItems());
-        */
-
     }
+
     @FXML
-    public void handleModifyTour(){
-        //Tour selectedObject;
+    public void handleModifyTour() {
         Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
-        //tourList.setOnMouseClicked(event -> {
-        //    Tour selectedItem = tourList.getSelectionModel().getSelectedItem();
-            if (selectedTour != null) {
-                elementSelected = true;
-                Tour selectedObject = selectedTour;
-                System.out.println("Der Benutzer hat auf das Element geklickt: " + selectedObject.getName());
-
-                TourModifyController tourModifyController = new TourModifyController(tourList);
-                //tourModifyController.handle();
-                tourModifyController.openWindow(selectedTour);
-
-                //openWindow(selectedObject);
-            }
-        //});
-        /*
-        tourList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                System.out.println("Der Benutzer hat auf das Element geklickt: " + newValue);
-
-                openWindow(newValue);
-                /*
-                TextField selectedElementTextField = new TextField();
-                selectedElementTextField.setEditable(true);
-
-                VBox root = new VBox();
-                root.getChildren().add(newValue);
-                /
-            }
-        });
-            */
-
-    }
-
-    public void openWindow(Tour tour){
-        TextField nameField = new TextField();
-        TextField distanceField = new TextField();
-
-        nameField.setEditable(true);
-        distanceField.setEditable(true);
-
-        nameField.setText(tour.getName());
-        distanceField.setText(String.valueOf(tour.getDistance()));
-
-        Stage detailsStage = new Stage();
-        VBox detailsRoot = new VBox();
-        detailsRoot.getChildren().addAll(nameField, distanceField);
-
-        //detailsRoot.getChildren().add(new Button("Schließen"));
-        Scene detailsScene = new Scene(detailsRoot, 200, 100);
-        detailsStage.setScene(detailsScene);
-        detailsStage.setTitle(tour.getName() + " Details");
-        detailsStage.show();
-        System.out.println(tour.getName());
-
+        if (selectedTour != null) {
+            TourModifyController tourModifyController = new TourModifyController(tourList);
+            tourModifyController.openWindow(selectedTour);
+        }
     }
 
     @FXML
@@ -180,22 +144,17 @@ public class TourPlannerController implements Initializable {
         Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
         if (selectedTour != null) {
             tourList.getItems().remove(selectedTour);
+            clearTourDetailsAndLogs();
         }
     }
 
-    @FXML
-    private void handleEditTour() {
-        // logik fehlt
+    private void clearTourDetailsAndLogs() {
+        mapView.setImage(null);
+        tourLogsTable.getItems().clear();
     }
 
     @FXML
     private void handleSearch() {
         String query = searchField.getText();
-        // logik fehlt
-    }
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
     }
 }
