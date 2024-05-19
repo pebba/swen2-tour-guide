@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import technikum.bohrffer.swen2tourguide.models.Tour;
@@ -25,6 +26,8 @@ public class TourModifyController {
     private TextField distance;
     @FXML
     private TextField time;
+    @FXML
+    private ImageView image;
     private ListView<Tour> tourList;
     private Stage stage;
     private Tour tour;
@@ -66,6 +69,7 @@ public class TourModifyController {
         to = new TextField();
         transport = new TextField();
         time = new TextField();
+        image = new ImageView(tour.getRouteImage());
 
         name.setEditable(true);
         distance.setEditable(true);
@@ -85,13 +89,14 @@ public class TourModifyController {
         Label transportLabel = new Label("Transportart:");
         Label timeLabel = new Label("Dauer:");
         Label descriptionLabel = new Label("Beschreibung:");
+        Label imageLabel = new Label("Karte");
 
 
         Stage detailsStage = new Stage();
         VBox detailsRoot = new VBox();
         detailsRoot.getChildren().addAll(nameLabel, name, descriptionLabel, description,
                 fromLabel, from, toLabel, to, transportLabel, transport, distanceLabel,distance,
-                timeLabel, time);
+                timeLabel, time, imageLabel, image);
 
         Button submitButton = new Button("Submit");
         detailsRoot.getChildren().add(submitButton);
@@ -104,7 +109,7 @@ public class TourModifyController {
         });
 
         //detailsRoot.getChildren().add(new Button("Schließen"));
-        Scene detailsScene = new Scene(detailsRoot, 300, 200);
+        Scene detailsScene = new Scene(detailsRoot, 500, 400);
         detailsStage.setScene(detailsScene);
         detailsStage.setTitle(tour.getName() + " Details");
         detailsStage.show();
