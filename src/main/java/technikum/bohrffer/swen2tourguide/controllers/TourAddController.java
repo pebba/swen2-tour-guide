@@ -7,11 +7,15 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import technikum.bohrffer.swen2tourguide.models.Tour;
+import technikum.bohrffer.swen2tourguide.repositories.TestDatabase;
+import technikum.bohrffer.swen2tourguide.services.TourAddService;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class TourAddController implements Initializable {
+
+   private TourAddService tourAddService = new TourAddService();
 
     @FXML
     private TextField name;
@@ -63,6 +67,18 @@ public class TourAddController implements Initializable {
         System.out.println(tour.getDistance());
         tourList.getItems().add(tour);
         stage.close();
+        tourAddService.AddTour(tour);
+        /*
+        TestDatabase testDatabase = new TestDatabase();
+        TestDatabase.TestCon();
+        try {
+            TestDatabase.getConnection();
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        testDatabase.TestSelect();
+        */
+
     }
 
     private boolean validateForm() {

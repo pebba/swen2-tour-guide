@@ -1,18 +1,28 @@
 package technikum.bohrffer.swen2tourguide.models;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name="tours")
 public class Tour {
 
+    @Id
     private String name;
     private String description;
+    @Column(name = "departure")
     private String from;
+    @Column(name = "destination")
     private String to;
+    @Column(name = "transport")
     private String transportType;
     private double distance;
+    @Column(name = "time")
     private double estimatedTime;
+    @Transient
     private String routeImage;
+    @Transient
     private final List<TourLog> tourLogs;
 
     public Tour(String name, String description, String from, String to, String transportType, double distance, double estimatedTime, String routeImage) {

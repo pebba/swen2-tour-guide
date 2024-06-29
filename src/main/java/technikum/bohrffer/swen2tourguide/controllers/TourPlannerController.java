@@ -173,6 +173,7 @@ public class TourPlannerController implements Initializable {
                 e.printStackTrace();
             }
         }
+
     }
 
     @FXML
