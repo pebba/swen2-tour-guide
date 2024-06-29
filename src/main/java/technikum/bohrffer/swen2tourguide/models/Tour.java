@@ -1,6 +1,8 @@
 package technikum.bohrffer.swen2tourguide.models;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +38,7 @@ public class Tour {
         this.routeImage = routeImage;
         this.tourLogs = new ArrayList<>();
     }
+
 
     public List<TourLog> getTourLogs() {
         return tourLogs;
