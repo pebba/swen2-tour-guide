@@ -25,11 +25,21 @@ public class Tour {
     @Transient
     private final List<TourLog> tourLogs;
 
+
+    @Transient
+    private double fromLat;
+    @Transient
+    private double fromLng;
+    @Transient
+    private double toLat;
+    @Transient
+    private double toLng;
     public Tour() {
         this.tourLogs = new ArrayList<>();
     }
 
-    public Tour(String name, String description, String from, String to, String transportType, double distance, double estimatedTime, String routeImage) {
+    public Tour(String name, String description, String from, String to, String transportType,
+            double distance, double estimatedTime, double fromLat, double fromLng, double toLat, double toLng) {
         this.name = name;
         this.description = description;
         this.from = from;
@@ -37,17 +47,11 @@ public class Tour {
         this.transportType = transportType;
         this.distance = distance;
         this.estimatedTime = estimatedTime;
-        this.routeImage = routeImage;
+        this.fromLat = fromLat;
+        this.fromLng = fromLng;
+        this.toLat = toLat;
+        this.toLng = toLng;
         this.tourLogs = new ArrayList<>();
-    }
-
-
-    public List<TourLog> getTourLogs() {
-        return tourLogs;
-    }
-
-    public void addTourLog(TourLog log) {
-        this.tourLogs.add(log);
     }
 
     public String getName() {
@@ -106,12 +110,44 @@ public class Tour {
         this.estimatedTime = estimatedTime;
     }
 
-    public String getRouteImage() {
-        return routeImage;
+    public double getFromLat() {
+        return fromLat;
     }
 
-    public void setRouteImage(String routeImage) {
-        this.routeImage = routeImage;
+    public void setFromLat(double fromLat) {
+        this.fromLat = fromLat;
+    }
+
+    public double getFromLng() {
+        return fromLng;
+    }
+
+    public void setFromLng(double fromLng) {
+        this.fromLng = fromLng;
+    }
+
+    public double getToLat() {
+        return toLat;
+    }
+
+    public void setToLat(double toLat) {
+        this.toLat = toLat;
+    }
+
+    public double getToLng() {
+        return toLng;
+    }
+
+    public void setToLng(double toLng) {
+        this.toLng = toLng;
+    }
+
+    public List<TourLog> getTourLogs() {
+        return tourLogs;
+    }
+
+    public void addTourLog(TourLog log) {
+        this.tourLogs.add(log);
     }
 
     @Override

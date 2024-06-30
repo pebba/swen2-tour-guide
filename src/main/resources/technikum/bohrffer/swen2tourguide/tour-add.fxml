@@ -3,11 +3,12 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.web.WebView?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="technikum.bohrffer.swen2tourguide.controllers.TourAddController"
-            prefHeight="400.0" prefWidth="400.0">
+            prefHeight="600.0" prefWidth="600.0">
     <VBox spacing="10.0" alignment="CENTER" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0">
         <VBox.margin>
             <Insets top="10" right="10" bottom="10" left="10"/>
@@ -20,5 +21,6 @@
         <TextField fx:id="distance" promptText="Distanz"/>
         <TextField fx:id="time" promptText="Dauer"/>
         <Button fx:id="submitButton" text="Submit" onAction="#handleSubmitButton"/>
+        <WebView fx:id="mapView"/>
     </VBox>
 </AnchorPane>

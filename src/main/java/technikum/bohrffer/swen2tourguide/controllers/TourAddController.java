@@ -1,21 +1,28 @@
 package technikum.bohrffer.swen2tourguide.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import technikum.bohrffer.swen2tourguide.models.Tour;
-import technikum.bohrffer.swen2tourguide.repositories.TestDatabase;
 import technikum.bohrffer.swen2tourguide.services.TourAddService;
+import technikum.bohrffer.swen2tourguide.services.TourService;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class TourAddController implements Initializable {
 
-   private TourAddService tourAddService = new TourAddService();
+    private static final Logger logger = LogManager.getLogger(TourAddController.class);
+    private final TourAddService tourAddService = new TourAddService();
+    private final TourService tourService = new TourService();
 
     @FXML
     private TextField name;
@@ -33,6 +40,8 @@ public class TourAddController implements Initializable {
     private TextField time;
     @FXML
     public Button submitButton;
+    @FXML
+    private WebView mapView;
 
     private Stage stage;
     private final ListView<Tour> tourList;
@@ -43,6 +52,10 @@ public class TourAddController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        WebEngine webEngine = mapView.getEngine();
+        URL mapUrl = getClass().getResource("/leaflet_map.html");
+        assert mapUrl != null;
+        webEngine.load(mapUrl.toString());
     }
 
     public void setStage(Stage stage) {
@@ -51,62 +64,67 @@ public class TourAddController implements Initializable {
 
     public void handleSubmitButton() {
         if (!validateForm()) {
-            System.out.println("The form is invalid!");
+            logger.warn("The form is invalid!");
         } else {
-            submit();
+            fetchCoordinatesAndSubmit();
         }
-        System.out.println("handleSubmitButton");
+        logger.info("handleSubmitButton clicked");
     }
 
-    public void submit() {
-        double dist = Double.parseDouble(distance.getText());
-        double timeDouble = Double.parseDouble(time.getText());
-        String image = "https://via.placeholder.com/150";
-        Tour tour = new Tour(name.getText(), description.getText(), from.getText(), to.getText(), transport.getText(),
-                dist, timeDouble, image);
-        System.out.println(tour.getDistance());
-        tourList.getItems().add(tour);
-        stage.close();
-        tourAddService.AddTour(tour);
-        /*
-        TestDatabase testDatabase = new TestDatabase();
-        TestDatabase.TestCon();
-        try {
-            TestDatabase.getConnection();
-        }catch (Exception e){
-            System.out.println(e);
-        }
-        testDatabase.TestSelect();
-        */
+    private void fetchCoordinatesAndSubmit() {
+        tourService.fetchCoordinates(from.getText(), (fromCoords) -> {
+            tourService.fetchCoordinates(to.getText(), (toCoords) -> {
+                Platform.runLater(() -> {
+                    double dist = Double.parseDouble(distance.getText());
+                    double timeDouble = Double.parseDouble(time.getText());
+                    Tour tour = new Tour(
+                            name.getText(),
+                            description.getText(),
+                            from.getText(),
+                            to.getText(),
+                            transport.getText(),
+                            dist,
+                            timeDouble,
+                            fromCoords[0],
+                            fromCoords[1],
+                            toCoords[0],
+                            toCoords[1]
+                    );
+                    logger.info("Tour created: " + tour);
+                    tourList.getItems().add(tour);
+                    stage.close();
+                    tourAddService.AddTour(tour);
+                    displayRouteOnMap(fromCoords, toCoords);
+                });
+            });
+        });
+    }
 
+    private void displayRouteOnMap(double[] fromCoords, double[] toCoords) {
+        String script = String.format("plotRoute(%f, %f, %f, %f);", fromCoords[0], fromCoords[1], toCoords[0], toCoords[1]);
+        Platform.runLater(() -> mapView.getEngine().executeScript(script));
     }
 
     private boolean validateForm() {
         boolean isValid = true;
 
-        String tourName = name.getText();
-        if (tourName == null || tourName.isEmpty()) {
-            System.out.println("Invalid tour name!");
+        if (name.getText().isEmpty() || description.getText().isEmpty() || from.getText().isEmpty() ||
+                to.getText().isEmpty() || transport.getText().isEmpty() || distance.getText().isEmpty() ||
+                time.getText().isEmpty()) {
+            logger.warn("All fields must be filled out.");
             isValid = false;
         }
-        String desc = description.getText();
-        String fromText = from.getText();
-        String toText = to.getText();
-        String transp = transport.getText();
-        if (desc.isEmpty() || fromText.isEmpty() || toText.isEmpty() || transp.isEmpty()) {
-            System.out.println("Please fill out all fields!");
+
+        if (!distance.getText().matches("\\d+(\\.\\d+)?")) {
+            logger.warn("Distance must be a number.");
             isValid = false;
         }
-        String input = distance.getText();
-        if (!input.matches("\\d+(\\.\\d+)?$")) {
-            System.out.println("Distance must be a number!");
+
+        if (!time.getText().matches("\\d+(\\.\\d+)?")) {
+            logger.warn("Time must be a number.");
             isValid = false;
         }
-        input = time.getText();
-        if (!input.matches("\\d+(\\.\\d+)?$")) {
-            System.out.println("Time must be a number!");
-            isValid = false;
-        }
+
         return isValid;
     }
 }

@@ -1,5 +1,9 @@
 package technikum.bohrffer.swen2tourguide.controllers;
 
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.ResourceBundle;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,17 +17,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import technikum.bohrffer.swen2tourguide.TourApp;
 import technikum.bohrffer.swen2tourguide.models.Tour;
 import technikum.bohrffer.swen2tourguide.models.TourLog;
+import technikum.bohrffer.swen2tourguide.services.ReportService;
 
 import java.io.IOException;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.ResourceBundle;
 
 public class TourPlannerController implements Initializable {
 
@@ -31,7 +33,7 @@ public class TourPlannerController implements Initializable {
     private ListView<Tour> tourList;
 
     @FXML
-    private ImageView mapView;
+    private WebView mapView;
 
     @FXML
     private TableView<TourLog> tourLogsTable;
@@ -68,6 +70,10 @@ public class TourPlannerController implements Initializable {
 
     private final ObservableList<Detail> detailsData = FXCollections.observableArrayList();
 
+    private final ReportService reportService = new ReportService();
+
+    private WebEngine webEngine;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
@@ -81,26 +87,35 @@ public class TourPlannerController implements Initializable {
         detailValueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
         detailsTableView.setItems(detailsData);
 
-        // sample data
-        tourList.getItems().addAll(
-                new Tour("Wienerwald", "Beautiful forest tour", "Vienna", "Wienerwald", "Hiking", 12.0, 3.0, "https://via.placeholder.com/150"),
-                new Tour("Dopplerhütte", "Challenging mountain bike route", "Vienna", "Dopplerhütte", "Biking", 15.0, 2.5, "https://via.placeholder.com/150")
-        );
+        webEngine = mapView.getEngine();
+        URL mapUrl = getClass().getResource("/leaflet_map.html");
+        assert mapUrl != null;
+        webEngine.load(mapUrl.toString());
 
-        // sample logs
-        tourList.getItems().get(0).addTourLog(new TourLog(LocalDateTime.now(), "Nice tour", "Easy", 12.0, 3.0, 5));
-        tourList.getItems().get(1).addTourLog(new TourLog(LocalDateTime.now(), "Great ride", "Hard", 15.0, 2.5, 4));
+        webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                // sample data
+                tourList.getItems().addAll(
+                        new Tour("Wienerwald", "Beautiful forest tour", "Vienna", "Wienerwald", "Hiking", 12.0, 3.0, 47.07, 15.43, 47.10, 15.40),
+                        new Tour("Dopplerhütte", "Challenging mountain bike route", "Vienna", "Dopplerhütte", "Biking", 15.0, 2.5, 47.08, 15.45, 47.11, 15.42)
+                );
 
-        tourList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                loadTourDetails(newValue);
-                loadTourLogs(newValue);
+                // sample logs
+                tourList.getItems().get(0).addTourLog(new TourLog(LocalDateTime.now(), "Nice tour", "Easy", 12.0, 3.0, 5));
+                tourList.getItems().get(1).addTourLog(new TourLog(LocalDateTime.now(), "Great ride", "Hard", 15.0, 2.5, 4));
+
+                tourList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        loadTourDetails(newValue);
+                        loadTourLogs(newValue);
+                    }
+                });
+
+                if (!tourList.getItems().isEmpty()) {
+                    tourList.getSelectionModel().select(0);
+                }
             }
         });
-
-        if (!tourList.getItems().isEmpty()) {
-            tourList.getSelectionModel().select(0);
-        }
     }
 
     private void loadTourDetails(Tour tour) {
@@ -113,16 +128,8 @@ public class TourPlannerController implements Initializable {
         detailsData.add(new Detail("Distance", String.valueOf(tour.getDistance())));
         detailsData.add(new Detail("Time", String.valueOf(tour.getEstimatedTime())));
 
-        if (tour.getRouteImage() != null) {
-            try {
-                mapView.setImage(new Image(tour.getRouteImage()));
-            } catch (Exception e) {
-                System.out.println("Could not load image: " + e.getMessage());
-                mapView.setImage(null);
-            }
-        } else {
-            mapView.setImage(null);
-        }
+        webEngine.executeScript("clearMap()");
+        webEngine.executeScript("plotRoute(" + tour.getFromLat() + ", " + tour.getFromLng() + ", " + tour.getToLat() + ", " + tour.getToLng() + ")");
     }
 
     private void loadTourLogs(Tour tour) {
@@ -187,7 +194,7 @@ public class TourPlannerController implements Initializable {
 
     private void clearTourDetailsAndLogs() {
         detailsData.clear();
-        mapView.setImage(null);
+        webEngine.executeScript("clearMap()");
         tourLogsTable.getItems().clear();
     }
 
@@ -267,6 +274,15 @@ public class TourPlannerController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void handleGenerateReport() {
+        List<Tour> tours = tourList.getItems();
+        String userHome = System.getProperty("user.home");
+        String outputPath = userHome + "\\Downloads\\tour_report.pdf";
+        reportService.generateReport(tours, outputPath);
+        System.out.println("Report generated successfully at " + outputPath);
     }
 
     public static class Detail {

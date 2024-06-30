@@ -6,6 +6,11 @@ module technikum.bohrffer.swen2tourguide {
     requires org.hibernate.orm.core;
     requires java.naming;
     requires java.sql;
+    requires org.apache.logging.log4j;
+    requires kernel;
+    requires layout;
+    requires javafx.web;
+    requires org.json;
 
     opens technikum.bohrffer.swen2tourguide to javafx.fxml, org.hibernate.orm.core;
     exports technikum.bohrffer.swen2tourguide;

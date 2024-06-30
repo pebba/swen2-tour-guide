@@ -32,7 +32,7 @@ class TourLogAddControllerTest extends TestBase {
 
     @BeforeAll
     static void setUpOnce() {
-        tour = new Tour("Test Tour", "Description", "From", "To", "Transport", 10.0, 1.5, "https://via.placeholder.com/150");
+        tour = new Tour("Test Tour", "Description", "From", "To", "Transport", 10.0, 1.5, 47.07, 15.43, 47.10, 15.40);
         tourLogsTable = new TableView<>();
         controller = new TourLogAddController(tour, tourLogsTable);
         stage = mock(Stage.class);
@@ -98,7 +98,7 @@ class TourLogAddControllerTest extends TestBase {
 
         assertEquals(1, tour.getTourLogs().size());
         assertEquals(1, tourLogsTable.getItems().size());
-        assertEquals("Comment", tourLogsTable.getItems().getFirst().getComment());
+        assertEquals("Comment", tourLogsTable.getItems().get(0).getComment());
         verify(stage).close();
     }
 

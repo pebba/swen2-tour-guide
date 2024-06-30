@@ -31,7 +31,7 @@ class TourModifyControllerTest extends TestBase {
 
     @BeforeAll
     static void setUpOnce() {
-        tour = new Tour("Original Tour", "Original Description", "Original From", "Original To", "Original Transport", 10.0, 1.5, "https://via.placeholder.com/150");
+        tour = new Tour("Original Tour", "Original Description", "Original From", "Original To", "Original Transport", 10.0, 1.5, 47.07, 15.43, 47.10, 15.40);
         ListView<Tour> tourList = new ListView<>();
         controller = new TourModifyController(tour, tourList);
         stage = mock(Stage.class);

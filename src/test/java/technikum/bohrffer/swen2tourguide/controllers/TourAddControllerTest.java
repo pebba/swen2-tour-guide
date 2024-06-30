@@ -28,6 +28,10 @@ class TourAddControllerTest extends TestBase {
     private TextField transport;
     private TextField distance;
     private TextField time;
+    private TextField fromLat;
+    private TextField fromLng;
+    private TextField toLat;
+    private TextField toLng;
 
     @BeforeAll
     static void setUpOnce() {
@@ -46,6 +50,10 @@ class TourAddControllerTest extends TestBase {
         transport = new TextField();
         distance = new TextField();
         time = new TextField();
+        fromLat = new TextField();
+        fromLng = new TextField();
+        toLat = new TextField();
+        toLng = new TextField();
 
         setField(controller, "name", name);
         setField(controller, "description", description);
@@ -54,6 +62,10 @@ class TourAddControllerTest extends TestBase {
         setField(controller, "transport", transport);
         setField(controller, "distance", distance);
         setField(controller, "time", time);
+        setField(controller, "fromLat", fromLat);
+        setField(controller, "fromLng", fromLng);
+        setField(controller, "toLat", toLat);
+        setField(controller, "toLng", toLng);
     }
 
     @Test
@@ -65,6 +77,10 @@ class TourAddControllerTest extends TestBase {
         transport.setText("");
         distance.setText("");
         time.setText("");
+        fromLat.setText("");
+        fromLng.setText("");
+        toLat.setText("");
+        toLng.setText("");
 
         Method validateFormMethod = controller.getClass().getDeclaredMethod("validateForm");
         validateFormMethod.setAccessible(true);
@@ -82,6 +98,10 @@ class TourAddControllerTest extends TestBase {
         transport.setText("Transport");
         distance.setText("10.0");
         time.setText("1.5");
+        fromLat.setText("47.07");
+        fromLng.setText("15.43");
+        toLat.setText("47.10");
+        toLng.setText("15.40");
 
         Method validateFormMethod = controller.getClass().getDeclaredMethod("validateForm");
         validateFormMethod.setAccessible(true);
@@ -99,13 +119,17 @@ class TourAddControllerTest extends TestBase {
         transport.setText("Transport");
         distance.setText("10.0");
         time.setText("1.5");
+        fromLat.setText("47.07");
+        fromLng.setText("15.43");
+        toLat.setText("47.10");
+        toLng.setText("15.40");
 
         Method submitMethod = controller.getClass().getDeclaredMethod("submit");
         submitMethod.setAccessible(true);
         submitMethod.invoke(controller);
 
         assertEquals(1, tourList.getItems().size());
-        assertEquals("Test Tour", tourList.getItems().getFirst().getName());
+        assertEquals("Test Tour", tourList.getItems().get(0).getName());
         verify(stage).close();
     }
 
@@ -142,6 +166,26 @@ class TourAddControllerTest extends TestBase {
     @Test
     void testTimeFieldNotNull() {
         assertNotNull(time, "Time field should not be null");
+    }
+
+    @Test
+    void testFromLatFieldNotNull() {
+        assertNotNull(fromLat, "From Latitude field should not be null");
+    }
+
+    @Test
+    void testFromLngFieldNotNull() {
+        assertNotNull(fromLng, "From Longitude field should not be null");
+    }
+
+    @Test
+    void testToLatFieldNotNull() {
+        assertNotNull(toLat, "To Latitude field should not be null");
+    }
+
+    @Test
+    void testToLngFieldNotNull() {
+        assertNotNull(toLng, "To Longitude field should not be null");
     }
 
     private void setField(Object target, String fieldName, Object value) throws Exception {

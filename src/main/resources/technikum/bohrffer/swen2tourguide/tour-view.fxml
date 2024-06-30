@@ -12,9 +12,9 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.web.WebView?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="technikum.bohrffer.swen2tourguide.controllers.TourPlannerController">
     <top>
@@ -38,6 +38,7 @@
                                         <Button onAction="#handleAddTour" text="+" />
                                         <Button onAction="#handleRemoveTour" text="-" />
                                         <Button onAction="#handleModifyTour" text="..." />
+                                        <Button onAction="#handleGenerateReport" text="?" />
                                     </buttons>
                                 </ButtonBar>
                                 <ListView fx:id="tourList" />
@@ -59,7 +60,7 @@
                         </Tab>
                         <Tab closable="false" text="Map">
                             <VBox>
-                                <ImageView fx:id="mapView" />
+                                <WebView fx:id="mapView" />
                             </VBox>
                         </Tab>
                     </TabPane>
