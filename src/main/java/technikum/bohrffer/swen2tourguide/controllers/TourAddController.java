@@ -34,6 +34,14 @@ public class TourAddController implements Initializable {
     @FXML
     private TextField time;
     @FXML
+    private TextField fromLat;
+    @FXML
+    private TextField fromLng;
+    @FXML
+    private TextField toLat;
+    @FXML
+    private TextField toLng;
+    @FXML
     public Button submitButton;
 
     private Stage stage;
@@ -63,9 +71,12 @@ public class TourAddController implements Initializable {
     public void submit() {
         double dist = Double.parseDouble(distance.getText());
         double timeDouble = Double.parseDouble(time.getText());
-        String image = "https://via.placeholder.com/150";
+        double fromLatDouble = Double.parseDouble(fromLat.getText());
+        double fromLngDouble = Double.parseDouble(fromLng.getText());
+        double toLatDouble = Double.parseDouble(toLat.getText());
+        double toLngDouble = Double.parseDouble(toLng.getText());
         Tour tour = new Tour(name.getText(), description.getText(), from.getText(), to.getText(), transport.getText(),
-                dist, timeDouble, image);
+                dist, timeDouble, fromLatDouble, fromLngDouble, toLatDouble, toLngDouble);
         logger.info("Tour created: " + tour);
         tourList.getItems().add(tour);
         stage.close();
@@ -96,6 +107,26 @@ public class TourAddController implements Initializable {
         input = time.getText();
         if (!input.matches("\\d+(\\.\\d+)?$")) {
             logger.warn("Time must be a number!");
+            isValid = false;
+        }
+        input = fromLat.getText();
+        if (!input.matches("\\d+(\\.\\d+)?$")) {
+            logger.warn("From Latitude must be a number!");
+            isValid = false;
+        }
+        input = fromLng.getText();
+        if (!input.matches("\\d+(\\.\\d+)?$")) {
+            logger.warn("From Longitude must be a number!");
+            isValid = false;
+        }
+        input = toLat.getText();
+        if (!input.matches("\\d+(\\.\\d+)?$")) {
+            logger.warn("To Latitude must be a number!");
+            isValid = false;
+        }
+        input = toLng.getText();
+        if (!input.matches("\\d+(\\.\\d+)?$")) {
+            logger.warn("To Longitude must be a number!");
             isValid = false;
         }
         return isValid;
