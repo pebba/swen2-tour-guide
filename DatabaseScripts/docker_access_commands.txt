@@ -1,0 +1,3 @@
+docker exec -it tourapp bash
+psql -U postgres -d tourdb
+SELECT * FROM tours;

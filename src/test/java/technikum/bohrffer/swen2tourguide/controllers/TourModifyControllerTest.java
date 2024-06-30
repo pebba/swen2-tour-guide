@@ -11,9 +11,8 @@ import technikum.bohrffer.swen2tourguide.models.Tour;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -114,6 +113,41 @@ class TourModifyControllerTest extends TestBase {
         assertEquals(15.0, tour.getDistance());
         assertEquals(2.0, tour.getEstimatedTime());
         verify(stage).close();
+    }
+
+    @Test
+    void testNameFieldNotNull() {
+        assertNotNull(name, "Name field should not be null");
+    }
+
+    @Test
+    void testDescriptionFieldNotNull() {
+        assertNotNull(description, "Description field should not be null");
+    }
+
+    @Test
+    void testFromFieldNotNull() {
+        assertNotNull(from, "From field should not be null");
+    }
+
+    @Test
+    void testToFieldNotNull() {
+        assertNotNull(to, "To field should not be null");
+    }
+
+    @Test
+    void testTransportFieldNotNull() {
+        assertNotNull(transport, "Transport field should not be null");
+    }
+
+    @Test
+    void testDistanceFieldNotNull() {
+        assertNotNull(distance, "Distance field should not be null");
+    }
+
+    @Test
+    void testTimeFieldNotNull() {
+        assertNotNull(time, "Time field should not be null");
     }
 
     private void setField(Object target, String fieldName, Object value) throws Exception {
