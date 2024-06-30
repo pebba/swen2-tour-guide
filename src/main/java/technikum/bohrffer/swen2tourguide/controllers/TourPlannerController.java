@@ -1,6 +1,9 @@
 package technikum.bohrffer.swen2tourguide.controllers;
 
+import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ResourceBundle;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,9 +26,6 @@ import technikum.bohrffer.swen2tourguide.models.TourLog;
 import technikum.bohrffer.swen2tourguide.services.ReportService;
 
 import java.io.IOException;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.ResourceBundle;
 
 public class TourPlannerController implements Initializable {
 
@@ -68,9 +68,11 @@ public class TourPlannerController implements Initializable {
     @FXML
     private TableColumn<Detail, String> detailValueColumn;
 
-    private WebEngine webEngine;
     private final ObservableList<Detail> detailsData = FXCollections.observableArrayList();
+
     private final ReportService reportService = new ReportService();
+
+    private WebEngine webEngine;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -87,30 +89,33 @@ public class TourPlannerController implements Initializable {
 
         webEngine = mapView.getEngine();
         URL mapUrl = getClass().getResource("/leaflet_map.html");
-        if (mapUrl != null) {
-            webEngine.load(mapUrl.toString());
-        }
+        assert mapUrl != null;
+        webEngine.load(mapUrl.toString());
 
-        // sample data
-        tourList.getItems().addAll(
-                new Tour("Wienerwald", "Beautiful forest tour", "Vienna", "Wienerwald", "Hiking", 12.0, 3.0, 47.07, 15.43, 47.10, 15.40),
-                new Tour("Dopplerhütte", "Challenging mountain bike route", "Vienna", "Dopplerhütte", "Biking", 15.0, 2.5, 47.08, 15.45, 47.11, 15.42)
-        );
+        webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                // sample data
+                tourList.getItems().addAll(
+                        new Tour("Wienerwald", "Beautiful forest tour", "Vienna", "Wienerwald", "Hiking", 12.0, 3.0, 47.07, 15.43, 47.10, 15.40),
+                        new Tour("Dopplerhütte", "Challenging mountain bike route", "Vienna", "Dopplerhütte", "Biking", 15.0, 2.5, 47.08, 15.45, 47.11, 15.42)
+                );
 
-        // sample logs
-        tourList.getItems().get(0).addTourLog(new TourLog(LocalDateTime.now(), "Nice tour", "Easy", 12.0, 3.0, 5));
-        tourList.getItems().get(1).addTourLog(new TourLog(LocalDateTime.now(), "Great ride", "Hard", 15.0, 2.5, 4));
+                // sample logs
+                tourList.getItems().get(0).addTourLog(new TourLog(LocalDateTime.now(), "Nice tour", "Easy", 12.0, 3.0, 5));
+                tourList.getItems().get(1).addTourLog(new TourLog(LocalDateTime.now(), "Great ride", "Hard", 15.0, 2.5, 4));
 
-        tourList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                loadTourDetails(newValue);
-                loadTourLogs(newValue);
+                tourList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        loadTourDetails(newValue);
+                        loadTourLogs(newValue);
+                    }
+                });
+
+                if (!tourList.getItems().isEmpty()) {
+                    tourList.getSelectionModel().select(0);
+                }
             }
         });
-
-        if (!tourList.getItems().isEmpty()) {
-            tourList.getSelectionModel().select(0);
-        }
     }
 
     private void loadTourDetails(Tour tour) {
@@ -175,6 +180,7 @@ public class TourPlannerController implements Initializable {
                 e.printStackTrace();
             }
         }
+
     }
 
     @FXML

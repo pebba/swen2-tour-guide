@@ -14,7 +14,7 @@ public class TourService {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(API_URL + "/v2/directions/driving-car?start=" + from + "&end=" + to))
-                .header("Authorization", "your-api-key")
+                .header("Authorization", "5b3ce3597851110001cf62488b716f6d578f44b09ead973ff4c922b6")
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
