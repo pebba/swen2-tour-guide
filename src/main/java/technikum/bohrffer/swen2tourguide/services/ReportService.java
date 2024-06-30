@@ -1,65 +1,38 @@
 package technikum.bohrffer.swen2tourguide.services;
 
-import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
 import technikum.bohrffer.swen2tourguide.models.Tour;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public class ReportService {
 
-    private static final String REPORT_TEMPLATE = """
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
-        <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="tour_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-            <field name="name" class="java.lang.String"/>
-            <detail>
-                <band height="20">
-                    <textField>
-                        <reportElement x="0" y="0" width="100" height="20"/>
-                        <textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
-                    </textField>
-                </band>
-            </detail>
-        </jasperReport>
-        """;
-
     public void generateReport(List<Tour> tours, String outputPath) {
         try {
-            ByteArrayInputStream templateStream = new ByteArrayInputStream(REPORT_TEMPLATE.getBytes(StandardCharsets.UTF_8));
-            System.out.println("Template stream created successfully.");
+            PdfWriter writer = new PdfWriter(outputPath);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
 
-            System.out.println("Report Template: \n" + REPORT_TEMPLATE);
+            document.add(new Paragraph("Tour Report"));
 
-            JasperDesign jasperDesign = JRXmlLoader.load(templateStream);
-            System.out.println("JasperDesign loaded successfully.");
+            for (Tour tour : tours) {
+                document.add(new Paragraph("Name: " + tour.getName()));
+                document.add(new Paragraph("Description: " + tour.getDescription()));
+                document.add(new Paragraph("From: " + tour.getFrom()));
+                document.add(new Paragraph("To: " + tour.getTo()));
+                document.add(new Paragraph("Transport: " + tour.getTransportType()));
+                document.add(new Paragraph("Distance: " + tour.getDistance()));
+                document.add(new Paragraph("Estimated Time: " + tour.getEstimatedTime()));
+                document.add(new Paragraph("\n"));
+            }
 
-            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
-            System.out.println("JasperReport compiled successfully.");
-
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(tours);
-            System.out.println("DataSource created successfully.");
-
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("createdBy", "Tour Guide Application");
-            System.out.println("Parameters set successfully.");
-
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-            System.out.println("JasperPrint filled successfully.");
-
-            JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
+            document.close();
             System.out.println("Report generated successfully at " + outputPath);
-        } catch (JRException e) {
-            System.err.println("JRException: Unable to generate report: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.err.println("Exception: " + e.getMessage());
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
