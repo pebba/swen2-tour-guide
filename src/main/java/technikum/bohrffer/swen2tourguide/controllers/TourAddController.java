@@ -1,15 +1,19 @@
 package technikum.bohrffer.swen2tourguide.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import technikum.bohrffer.swen2tourguide.models.Tour;
 import technikum.bohrffer.swen2tourguide.services.TourAddService;
+import technikum.bohrffer.swen2tourguide.services.TourService;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -18,6 +22,7 @@ public class TourAddController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(TourAddController.class);
     private final TourAddService tourAddService = new TourAddService();
+    private final TourService tourService = new TourService();
 
     @FXML
     private TextField name;
@@ -34,15 +39,9 @@ public class TourAddController implements Initializable {
     @FXML
     private TextField time;
     @FXML
-    private TextField fromLat;
-    @FXML
-    private TextField fromLng;
-    @FXML
-    private TextField toLat;
-    @FXML
-    private TextField toLng;
-    @FXML
     public Button submitButton;
+    @FXML
+    private WebView mapView;
 
     private Stage stage;
     private final ListView<Tour> tourList;
@@ -53,6 +52,10 @@ public class TourAddController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        WebEngine webEngine = mapView.getEngine();
+        URL mapUrl = getClass().getResource("/leaflet_map.html");
+        assert mapUrl != null;
+        webEngine.load(mapUrl.toString());
     }
 
     public void setStage(Stage stage) {
@@ -63,72 +66,65 @@ public class TourAddController implements Initializable {
         if (!validateForm()) {
             logger.warn("The form is invalid!");
         } else {
-            submit();
+            fetchCoordinatesAndSubmit();
         }
         logger.info("handleSubmitButton clicked");
     }
 
-    public void submit() {
-        double dist = Double.parseDouble(distance.getText());
-        double timeDouble = Double.parseDouble(time.getText());
-        double fromLatDouble = Double.parseDouble(fromLat.getText());
-        double fromLngDouble = Double.parseDouble(fromLng.getText());
-        double toLatDouble = Double.parseDouble(toLat.getText());
-        double toLngDouble = Double.parseDouble(toLng.getText());
-        Tour tour = new Tour(name.getText(), description.getText(), from.getText(), to.getText(), transport.getText(),
-                dist, timeDouble, fromLatDouble, fromLngDouble, toLatDouble, toLngDouble);
-        logger.info("Tour created: " + tour);
-        tourList.getItems().add(tour);
-        stage.close();
-        tourAddService.AddTour(tour);
+    private void fetchCoordinatesAndSubmit() {
+        tourService.fetchCoordinates(from.getText(), (fromCoords) -> {
+            tourService.fetchCoordinates(to.getText(), (toCoords) -> {
+                Platform.runLater(() -> {
+                    double dist = Double.parseDouble(distance.getText());
+                    double timeDouble = Double.parseDouble(time.getText());
+                    Tour tour = new Tour(
+                            name.getText(),
+                            description.getText(),
+                            from.getText(),
+                            to.getText(),
+                            transport.getText(),
+                            dist,
+                            timeDouble,
+                            fromCoords[0],
+                            fromCoords[1],
+                            toCoords[0],
+                            toCoords[1]
+                    );
+                    logger.info("Tour created: " + tour);
+                    tourList.getItems().add(tour);
+                    stage.close();
+                    tourAddService.AddTour(tour);
+                    displayRouteOnMap(fromCoords, toCoords);
+                });
+            });
+        });
+    }
+
+    private void displayRouteOnMap(double[] fromCoords, double[] toCoords) {
+        String script = String.format("plotRoute(%f, %f, %f, %f);", fromCoords[0], fromCoords[1], toCoords[0], toCoords[1]);
+        Platform.runLater(() -> mapView.getEngine().executeScript(script));
     }
 
     private boolean validateForm() {
         boolean isValid = true;
 
-        String tourName = name.getText();
-        if (tourName == null || tourName.isEmpty()) {
-            logger.warn("Invalid tour name!");
+        if (name.getText().isEmpty() || description.getText().isEmpty() || from.getText().isEmpty() ||
+                to.getText().isEmpty() || transport.getText().isEmpty() || distance.getText().isEmpty() ||
+                time.getText().isEmpty()) {
+            logger.warn("All fields must be filled out.");
             isValid = false;
         }
-        String desc = description.getText();
-        String fromText = from.getText();
-        String toText = to.getText();
-        String transp = transport.getText();
-        if (desc.isEmpty() || fromText.isEmpty() || toText.isEmpty() || transp.isEmpty()) {
-            logger.warn("Please fill out all fields!");
+
+        if (!distance.getText().matches("\\d+(\\.\\d+)?")) {
+            logger.warn("Distance must be a number.");
             isValid = false;
         }
-        String input = distance.getText();
-        if (!input.matches("\\d+(\\.\\d+)?$")) {
-            logger.warn("Distance must be a number!");
+
+        if (!time.getText().matches("\\d+(\\.\\d+)?")) {
+            logger.warn("Time must be a number.");
             isValid = false;
         }
-        input = time.getText();
-        if (!input.matches("\\d+(\\.\\d+)?$")) {
-            logger.warn("Time must be a number!");
-            isValid = false;
-        }
-        input = fromLat.getText();
-        if (!input.matches("\\d+(\\.\\d+)?$")) {
-            logger.warn("From Latitude must be a number!");
-            isValid = false;
-        }
-        input = fromLng.getText();
-        if (!input.matches("\\d+(\\.\\d+)?$")) {
-            logger.warn("From Longitude must be a number!");
-            isValid = false;
-        }
-        input = toLat.getText();
-        if (!input.matches("\\d+(\\.\\d+)?$")) {
-            logger.warn("To Latitude must be a number!");
-            isValid = false;
-        }
-        input = toLng.getText();
-        if (!input.matches("\\d+(\\.\\d+)?$")) {
-            logger.warn("To Longitude must be a number!");
-            isValid = false;
-        }
+
         return isValid;
     }
 }

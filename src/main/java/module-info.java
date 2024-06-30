@@ -10,6 +10,7 @@ module technikum.bohrffer.swen2tourguide {
     requires kernel;
     requires layout;
     requires javafx.web;
+    requires org.json;
 
     opens technikum.bohrffer.swen2tourguide to javafx.fxml, org.hibernate.orm.core;
     exports technikum.bohrffer.swen2tourguide;
