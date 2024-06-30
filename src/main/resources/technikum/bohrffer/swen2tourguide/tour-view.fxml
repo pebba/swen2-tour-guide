@@ -38,6 +38,7 @@
                                         <Button onAction="#handleAddTour" text="+" />
                                         <Button onAction="#handleRemoveTour" text="-" />
                                         <Button onAction="#handleModifyTour" text="..." />
+                                        <Button onAction="#handleGenerateReport" text="?" />
                                     </buttons>
                                 </ButtonBar>
                                 <ListView fx:id="tourList" />

@@ -19,10 +19,12 @@ import javafx.stage.Stage;
 import technikum.bohrffer.swen2tourguide.TourApp;
 import technikum.bohrffer.swen2tourguide.models.Tour;
 import technikum.bohrffer.swen2tourguide.models.TourLog;
+import technikum.bohrffer.swen2tourguide.services.ReportService;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class TourPlannerController implements Initializable {
@@ -67,6 +69,8 @@ public class TourPlannerController implements Initializable {
     private TableColumn<Detail, String> detailValueColumn;
 
     private final ObservableList<Detail> detailsData = FXCollections.observableArrayList();
+
+    private final ReportService reportService = new ReportService();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -267,6 +271,15 @@ public class TourPlannerController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void handleGenerateReport() {
+        List<Tour> tours = tourList.getItems();
+        String userHome = System.getProperty("user.home");
+        String outputPath = userHome + "\\Downloads\\tour_report.pdf";
+        reportService.generateReport(tours, outputPath);
+        System.out.println("Report generated successfully at " + outputPath);
     }
 
     public static class Detail {
