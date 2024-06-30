@@ -1,6 +1,7 @@
 package technikum.bohrffer.swen2tourguide.models;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="tours")

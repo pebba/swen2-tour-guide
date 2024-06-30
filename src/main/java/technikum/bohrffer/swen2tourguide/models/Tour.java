@@ -1,8 +1,6 @@
 package technikum.bohrffer.swen2tourguide.models;
 
 import jakarta.persistence.*;
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +24,10 @@ public class Tour {
     private String routeImage;
     @Transient
     private final List<TourLog> tourLogs;
+
+    public Tour() {
+        this.tourLogs = new ArrayList<>();
+    }
 
     public Tour(String name, String description, String from, String to, String transportType, double distance, double estimatedTime, String routeImage) {
         this.name = name;
