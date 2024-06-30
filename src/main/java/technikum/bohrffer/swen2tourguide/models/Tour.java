@@ -25,6 +25,7 @@ public class Tour {
     @Transient
     private final List<TourLog> tourLogs;
 
+
     @Transient
     private double fromLat;
     @Transient
@@ -33,7 +34,6 @@ public class Tour {
     private double toLat;
     @Transient
     private double toLng;
-
     public Tour() {
         this.tourLogs = new ArrayList<>();
     }
